@@ -10,7 +10,7 @@ from datetime import datetime
 def test_authentication():
   # can we get an access toekn from our refresh token?
   print("=" * 60)
-  print("TEST 1: Authentication)
+  print("TEST 1: Authentication")
   print("=" * 60)
 
   # Get credentials from environment variables
@@ -23,9 +23,9 @@ def test_authentication():
       print("✗ Missing credentials in environment variables!")
       return None
 
-  print(f"✓ Found all credentials")
-      print(f"  Client ID: {client_id[:10]}...")
-      print(f"  Refresh Token: {refresh_token[:10]}...")
+  print("+ Found all credentials")
+  print(f"  Client ID: {client_id[:10]}...")
+  print(f"  Refresh Token: {refresh_token[:10]}...")
   # Try to get an access token
   token_url = "https://accounts.zoho.com/oauth/v2/token"
   params = {
@@ -39,25 +39,25 @@ def test_authentication():
           response = requests.post(token_url, params=params)
           
           # Check if request was successful
-          if response.status_code == 200:
-              tokens = response.json()
-              
-              if 'access_token' in tokens:
-                  access_token = tokens['access_token']
-                  print(f"✓ SUCCESS! Got access token: {access_token[:20]}...")
-                  return access_token
-              else:
-                  print(f"✗ FAILED: Response missing access_token")
-                  print(f"  Response: {tokens}")
-                  return None
-          else:
-              print(f"✗ FAILED: HTTP {response.status_code}")
-              print(f"  Response: {response.text}")
-              return None
-              
-      except Exception as e:
-          print(f"✗ ERROR: {e}")
-          return None
+        if response.status_code == 200:
+            tokens = response.json()
+            
+            if 'access_token' in tokens:
+                access_token = tokens['access_token']
+                print(f"+ SUCCESS! Got access token: {access_token[:20]}...")
+                return access_token
+            else:
+                print(f"X FAILED: Response missing access_token")
+                print(f"  Response: {tokens}")
+                return None
+        else:
+            print(f"X FAILED: HTTP {response.status_code}")
+            print(f"  Response: {response.text}")
+            return None
+            
+    except Exception as e:
+        print(f"X ERROR: {e}")
+        return None
 
 def test_api_call(access_token):
     """
