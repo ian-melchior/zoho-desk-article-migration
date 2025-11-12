@@ -1,0 +1,39 @@
+# Workflow to test Zoho Desk API authentication
+name: Test Zoho Authentication
+
+# When should this run?
+on:
+  workflow_dispatch:  # Manual trigger - you click a button to run it
+
+# Define the job
+jobs:
+  test:
+    # Use Ubuntu (Linux) virtual machine
+    runs-on: ubuntu-latest
+    
+    # Steps to execute
+    steps:
+    # Step 1: Download our code from the repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    # Step 2: Install Python
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    # Step 3: Install the requests library
+    - name: Install dependencies
+      run: |
+        pip install requests
+    
+    # Step 4: Run our test script
+    - name: Run authentication test
+      env:
+        # Inject our secrets as environment variables
+        ZOHO_CLIENT_ID: ${{ secrets.ZOHO_CLIENT_ID }}
+        ZOHO_CLIENT_SECRET: ${{ secrets.ZOHO_CLIENT_SECRET }}
+        ZOHO_REFRESH_TOKEN: ${{ secrets.ZOHO_REFRESH_TOKEN }}
+        ZOHO_ORG_ID: ${{ secrets.ZOHO_ORG_ID }}
+      run: python test_auth.py
