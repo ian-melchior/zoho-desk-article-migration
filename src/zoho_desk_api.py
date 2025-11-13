@@ -131,7 +131,10 @@ class ZohoDeskAPI:
         headers = self._get_headers()
         url = f"{self.base_url}/articles"
         
-        params = {}
+        params = {
+            'orgId': self.org_id  # Add orgId as query parameter
+        }
+        
         if limit:
             params['limit'] = min(limit, 100)
         if from_index is not None:
@@ -152,6 +155,8 @@ class ZohoDeskAPI:
             
         except requests.exceptions.RequestException as e:
             print(f"[API] Error fetching articles: {e}")
+            if hasattr(e, 'response') and e.response is not None:
+                print(f"[API] Response body: {e.response.text}")
             return None
     
     def get_all_articles(self):
@@ -162,7 +167,7 @@ class ZohoDeskAPI:
             list: All articles from all pages, or None if error
         """
         all_articles = []
-        from_index = 1
+        from_index = 0
         batch_size = 100
         
         print(f"[API] Fetching all articles with pagination...")
