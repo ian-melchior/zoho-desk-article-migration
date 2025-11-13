@@ -167,7 +167,7 @@ class ZohoDeskAPI:
             list: All articles from all pages, or None if error
         """
         all_articles = []
-        from_index = 0
+        from_index = 1
         batch_size = 100
         
         print(f"[API] Fetching all articles with pagination...")
@@ -188,7 +188,7 @@ class ZohoDeskAPI:
             if len(articles) < batch_size:
                 break
             
-            from_index += batch_size
+            from_index += len(articles)
         
         print(f"[API] Finished! Total articles: {len(all_articles)}")
         return all_articles
