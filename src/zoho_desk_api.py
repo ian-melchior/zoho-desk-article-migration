@@ -136,7 +136,7 @@ class ZohoDeskAPI:
         }
         
         if limit:
-            params['limit'] = min(limit, 100)
+            params['limit'] = min(limit, 50)
         if from_index is not None:
             params['from'] = from_index
         
@@ -168,7 +168,7 @@ class ZohoDeskAPI:
         """
         all_articles = []
         from_index = 1
-        batch_size = 100
+        batch_size = 50
         
         print(f"[API] Fetching all articles with pagination...")
         
