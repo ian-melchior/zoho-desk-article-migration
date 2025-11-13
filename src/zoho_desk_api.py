@@ -162,7 +162,7 @@ class ZohoDeskAPI:
             list: All articles from all pages, or None if error
         """
         all_articles = []
-        from_index = 0
+        from_index = 1
         batch_size = 100
         
         print(f"[API] Fetching all articles with pagination...")
