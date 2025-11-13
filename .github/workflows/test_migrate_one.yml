@@ -1,0 +1,29 @@
+name: Test Single Article Migration
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        pip install requests python-dotenv
+    
+    - name: Run migration test
+      env:
+        ZOHO_CLIENT_ID: ${{ secrets.ZOHO_CLIENT_ID }}
+        ZOHO_CLIENT_SECRET: ${{ secrets.ZOHO_CLIENT_SECRET }}
+        ZOHO_REFRESH_TOKEN: ${{ secrets.ZOHO_REFRESH_TOKEN }}
+        ZOHO_ORG_ID: ${{ secrets.ZOHO_ORG_ID }}
+      run: python test_migrate_one.py
