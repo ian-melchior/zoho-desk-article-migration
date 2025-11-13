@@ -21,7 +21,7 @@ def get_all_categories(api):
     headers = api._get_headers()
     
     # Try the articles endpoint and extract unique categories
-    articles = api.get_articles(limit=100)
+    articles = api.get_articles()
     
     if not articles or not articles.get('data'):
         return None
@@ -70,7 +70,7 @@ def main():
     print("\nFetching articles to extract category information...")
     
     # Get articles from both departments
-    articles_response = api.get_articles(limit=100)
+    articles_response = api.get_articles()
     
     if not articles_response:
         print("X Failed to fetch articles")
