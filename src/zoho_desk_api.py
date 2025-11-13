@@ -132,7 +132,7 @@ class ZohoDeskAPI:
             print(f"[API] Network error fetching article {article_id}: {e}")
             return None
     
-    def get_articles(self, limit=None, from_index=None):
+   def get_articles(self, limit=None, from_index=None):
         """
         Fetch multiple articles from Zoho Desk.
         
@@ -140,7 +140,7 @@ class ZohoDeskAPI:
         We'll use this later for batch operations.
         
         Args:
-            limit (int, optional): Maximum number of articles to fetch (max 100)
+            limit (int, optional): Maximum number of articles to fetch per request (max 100)
             from_index (int, optional): Starting index for pagination
         
         Returns:
@@ -155,11 +155,11 @@ class ZohoDeskAPI:
         # Build query parameters for pagination
         params = {}
         if limit:
-            params['limit'] = limit
-        if from_index:
+            params['limit'] = min(limit, 100)  # Zoho max is 100 per request
+        if from_index is not None:
             params['from'] = from_index
         
-        print(f"[API] Fetching articles (limit={limit}, from={from_index})")
+        print(f"[API] Fetching articles (limit={params.get('limit', 'default')}, from={from_index})")
         
         try:
             response = requests.get(url, headers=headers, params=params)
@@ -175,6 +175,41 @@ class ZohoDeskAPI:
         except requests.exceptions.RequestException as e:
             print(f"[API] Error fetching articles: {e}")
             return None
+    
+    def get_all_articles(self):
+        """
+        Fetch ALL articles using pagination.
+        
+        Returns:
+            list: All articles from all pages, or None if error
+        """
+        all_articles = []
+        from_index = 0
+        batch_size = 100
+        
+        print(f"[API] Fetching all articles with pagination...")
+        
+        while True:
+            batch = self.get_articles(limit=batch_size, from_index=from_index)
+            
+            if not batch or 'data' not in batch:
+                break
+            
+            articles = batch['data']
+            if not articles:
+                break
+            
+            all_articles.extend(articles)
+            print(f"[API] Total fetched so far: {len(all_articles)}")
+            
+            # If we got fewer than batch_size, we've reached the end
+            if len(articles) < batch_size:
+                break
+            
+            from_index += batch_size
+        
+        print(f"[API] Finished! Total articles: {len(all_articles)}")
+        return all_articles
     
     def create_article(self, article_data):
         """
