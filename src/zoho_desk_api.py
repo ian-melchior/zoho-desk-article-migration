@@ -33,13 +33,8 @@ class ZohoDeskAPI:
             auth (ZohoAuth): An authenticated ZohoAuth instance
             org_id (str): Your Zoho Desk organization ID
         """
-        # Store the auth handler so we can get access tokens
         self.auth = auth
-        
-        # Organization ID - required for all Zoho Desk API calls
         self.org_id = org_id
-        
-        # Base URL for all Zoho Desk API endpoints
         self.base_url = "https://desk.zoho.com/api/v1"
     
     def _get_headers(self, include_content_type=False):
@@ -59,20 +54,14 @@ class ZohoDeskAPI:
         Returns:
             dict: Headers dictionary ready for requests
         """
-        # Make sure we have a valid access token
         if not self.auth.access_token:
             self.auth.get_access_token()
         
-        # Build the headers dictionary
         headers = {
-            # Zoho requires this specific format for OAuth tokens
             "Authorization": f"Zoho-oauthtoken {self.auth.access_token}",
-            
-            # orgId tells Zoho which organization's data to access
             "orgId": self.org_id
         }
         
-        # For POST/PATCH requests, we need to specify we're sending JSON
         if include_content_type:
             headers["Content-Type"] = "application/json"
         
@@ -99,22 +88,14 @@ class ZohoDeskAPI:
                   - status: PUBLISHED, DRAFT, etc.
                   - and many more...
         """
-        # Get headers with valid auth token
         headers = self._get_headers()
-        
-        # Build the full URL for this specific article
         url = f"{self.base_url}/articles/{article_id}"
         
         print(f"[API] Fetching article {article_id} from {url}")
         
         try:
-            # Make GET request to fetch the article
             response = requests.get(url, headers=headers)
-            
-            # Raise exception for bad status codes (404, 500, etc.)
             response.raise_for_status()
-            
-            # Parse the JSON response
             article_data = response.json()
             
             print(f"[API] Successfully fetched article: {article_data.get('title', 'Untitled')}")
@@ -122,17 +103,15 @@ class ZohoDeskAPI:
             return article_data
             
         except requests.exceptions.HTTPError as e:
-            # HTTP error (404 Not Found, 403 Forbidden, etc.)
             print(f"[API] HTTP error fetching article {article_id}: {e}")
             print(f"[API] Response: {response.text}")
             return None
             
         except requests.exceptions.RequestException as e:
-            # Network error or other request problem
             print(f"[API] Network error fetching article {article_id}: {e}")
             return None
     
-   def get_articles(self, limit=None, from_index=None):
+    def get_articles(self, limit=None, from_index=None):
         """
         Fetch multiple articles from Zoho Desk.
         
@@ -152,10 +131,9 @@ class ZohoDeskAPI:
         headers = self._get_headers()
         url = f"{self.base_url}/articles"
         
-        # Build query parameters for pagination
         params = {}
         if limit:
-            params['limit'] = min(limit, 100)  # Zoho max is 100 per request
+            params['limit'] = min(limit, 100)
         if from_index is not None:
             params['from'] = from_index
         
@@ -202,7 +180,6 @@ class ZohoDeskAPI:
             all_articles.extend(articles)
             print(f"[API] Total fetched so far: {len(all_articles)}")
             
-            # If we got fewer than batch_size, we've reached the end
             if len(articles) < batch_size:
                 break
             
@@ -235,15 +212,12 @@ class ZohoDeskAPI:
         Returns:
             dict: Created article data if successful, None if error
         """
-        # Get headers including Content-Type for JSON body
         headers = self._get_headers(include_content_type=True)
-        
         url = f"{self.base_url}/articles"
         
         print(f"[API] Creating article: {article_data.get('title', 'Untitled')}")
         
         try:
-            # Make POST request with article data as JSON
             response = requests.post(url, headers=headers, json=article_data)
             response.raise_for_status()
             
@@ -273,13 +247,11 @@ class ZohoDeskAPI:
             dict: Updated article data if successful, None if error
         """
         headers = self._get_headers(include_content_type=True)
-        
         url = f"{self.base_url}/articles/{article_id}"
         
         print(f"[API] Updating article {article_id}")
         
         try:
-            # PATCH only updates the fields you provide, doesn't replace entire article
             response = requests.patch(url, headers=headers, json=article_data)
             response.raise_for_status()
             
