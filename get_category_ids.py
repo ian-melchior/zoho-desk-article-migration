@@ -70,11 +70,12 @@ def main():
     print("\nFetching articles to extract category information...")
     
     # Get articles from both departments
-    articles_response = api.get_articles()
-    
-    if not articles_response:
+    all_articles = api.get_all_articles()
+    if not all_articles:
         print("X Failed to fetch articles")
         return
+
+    print(f"\nAnalyzing {len(all_articles)} articles...")
     
     # Department IDs
     ACE_DEPT = '986740000000006907'
@@ -84,7 +85,7 @@ def main():
     ace_categories = {}
     sjrrc_categories = {}
     
-    for article in articles_response.get('data', []):
+    for article in all_articles:
         cat_id = article.get('categoryId')
         dept_id = article.get('departmentId')
         
