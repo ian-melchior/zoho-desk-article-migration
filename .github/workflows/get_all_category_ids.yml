@@ -29,7 +29,7 @@ jobs:
       run: python get_all_category_ids.py
     
     - name: Upload category data
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: category-data
         path: category_data.json
